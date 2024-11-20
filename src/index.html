@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Modal - by Terra</title>
+
+        <link rel="stylesheet" href="https://unpkg.com/@terrahq/design-system@latest/dist/style.css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+    </head>
+
+    <body>
+        <div class="f--container">
+            <div class="f--row">
+                <div class="f--col-12">
+                    <h1 class="f--mb-3 f--mt-3">Modal </h1>
+     
+     
+     
+                    <!-- Buttons to Open Modals -->
+  <button modal-open="demo-modal-1">Open Modal 1</button>
+  <button modal-open="demo-modal-2">Open Modal 2</button>
+  <button modal-open="demo-modal-3">Open Modal 3</button>
+
+  <!-- Modal 1 -->
+  <div id="demo-modal-1" aria-hidden="true" class="modal">
+    <div class="modal-overlay">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="demo-modal-1-title">
+        <header class="modal-header">
+          <h2 id="demo-modal-1-title">Modal 1</h2>
+          <button class="modal-close" aria-label="Close modal" modal-close>&times;</button>
+        </header>
+        <div id="demo-modal-1-content" class="modal-body">
+          <p>This is Modal 1. It's a basic example.</p>
+        </div>
+        <footer class="modal-footer">
+          <button modal-close>Close</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div id="demo-modal-2" aria-hidden="true" class="modal">
+    <div class="modal-overlay" modal-close>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="demo-modal-2-title">
+        <header class="modal-header">
+          <h2 id="demo-modal-2-title">Modal 2</h2>
+          <button class="modal-close" aria-label="Close modal" modal-close>&times;</button>
+        </header>
+        <div id="demo-modal-2-content" class="modal-body">
+          <p>This is Modal 2. Content will be dynamically updated after opening.</p>
+        </div>
+        <footer class="modal-footer">
+          <button modal-close>Close</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div id="demo-modal-3" aria-hidden="true" class="modal">
+    <div class="modal-overlay" modal-close>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="demo-modal-3-title">
+        <header class="modal-header">
+          <h2 id="demo-modal-3-title">Modal 3</h2>
+          <button class="modal-close" aria-label="Close modal" modal-close>&times;</button>
+        </header>
+        <div id="demo-modal-3-content" class="modal-body">
+          <p>This is Modal 3. It demonstrates delayed dynamic content.</p>
+        </div>
+        <footer class="modal-footer">
+          <button modal-close>Close</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <script type="module" src="./js/index.ts"></script>
+    </body>
+</html>
