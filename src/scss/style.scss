@@ -1,41 +1,39 @@
 .c--modal-a {
   display: none; /* Oculta el modal por defecto */
-  position: fixed; /* Asegura que cubra toda la pantalla */
+  position: fixed; /* Hace que el modal ocupe toda la pantalla */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
+  display: flex; /* Activa Flexbox */
+  justify-content: center; /* Centrado horizontal */
+  align-items: center; /* Centrado vertical */
   background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
-  opacity: 0;
-  pointer-events: none; /* Evita clics mientras está oculto */
-  transform: scale(0.9); /* Hace un pequeño "zoom out" al inicio */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Suaviza las transiciones */
+  opacity: 0; /* Invisible al inicio */
+  pointer-events: none; /* Evita clics cuando está oculto */
+  transition: opacity 0.3s ease; /* Animación de entrada/salida */
 
   &.c--modal-a--is-open {
-    display: flex; /* Activa el contenedor Flexbox */
+    display: flex; /* Muestra el contenedor */
     opacity: 1; /* Lo hace visible */
-    pointer-events: auto; /* Habilita clics */
-    transform: scale(1); /* Restaura el tamaño */
+    pointer-events: auto; /* Activa clics */
   }
 
   &__overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: transparent; /* Fondo clicable pero invisible */
+    background: transparent;
   }
 
   &__item {
     position: relative;
-    background-color: #fff;
+    background-color: #fff; /* Fondo blanco del modal */
     padding: 1.5rem;
     border-radius: 8px;
-    max-width: 500px; /* Ancho máximo del modal */
-    width: 90%; /* Asegura que sea responsivo */
+    max-width: 500px; /* Limita el ancho máximo */
+    width: 90%; /* Ajuste responsivo */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */
-    z-index: 10;
     text-align: center; /* Centra el contenido interno */
   }
 
