@@ -3,7 +3,7 @@ import { resolve } from 'path';
 
 const root = resolve(__dirname, 'src');
 const outDir = resolve(__dirname, 'dist');
-const entryPath = resolve(__dirname, 'src/js/Counter.js');
+const entryPath = resolve(__dirname, 'src/js/Modal.js');
 
 export default defineConfig({
     root,
@@ -12,19 +12,17 @@ export default defineConfig({
     build: {
       lib: {
         entry: entryPath,
-        name: 'Counter', // Library name as : Counter | etc
+        name: 'Modal', // Library name as : Counter | etc
         formats: ['es', 'umd'], // Output formats as : es | umd, es is for modern browsers, umd is for older browsers
         fileName: (format,name) => `${name}.${format}.js`, // File naming as : reveal-it | collapsify | etc
       },
       outDir, 
       emptyOutDir: true, 
       rollupOptions: {
-        external: ['gsap'],
+      
         output: {
-          globals: {
-            gsap: 'gsap',
-          },
-          name: 'Counter',
+         
+          name: 'Modal',
         },
       },
     },
