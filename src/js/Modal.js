@@ -3,16 +3,10 @@ class Modal {
       const defaults = {
         onShow: (modal) => console.info(`${modal.id} is shown`),
         onClose: (modal) => console.info(`${modal.id} is hidden`),
-        beforeOpen: (modal) => {},
-        beforeClose: (modal) => {},
         openTrigger: 'data-modal-open',
         closeTrigger: 'data-modal-close',
         openClass: 'c--modal-a--is-open',
         disableScroll: true,
-        disableFocus: false,
-        awaitOpenAnimation: false,
-        awaitCloseAnimation: false,
-        debugMode: false,
       };
   
       this.settings = { ...defaults, ...options };
@@ -22,20 +16,17 @@ class Modal {
   
     init() {
       if (this.modals.length === 0) {
-        if (this.settings.debugMode) {
-          console.error('No modals found in the document.');
-        }
+        console.error('No modals found.');
         return;
       }
   
-      this.modals.forEach((modal) => {
-        this.addEventListeners(modal);
-      });
+      this.modals.forEach((modal) => this.addEventListeners(modal));
     }
   
     addEventListeners(modal) {
       const modalId = modal.id;
   
+      // Botones para abrir el modal
       document.querySelectorAll(`[${this.settings.openTrigger}="${modalId}"]`).forEach((trigger) => {
         trigger.addEventListener('click', (event) => {
           event.preventDefault();
@@ -43,6 +34,7 @@ class Modal {
         });
       });
   
+      // Botones para cerrar el modal
       modal.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((trigger) => {
         trigger.addEventListener('click', (event) => {
           event.preventDefault();
@@ -50,12 +42,14 @@ class Modal {
         });
       });
   
+      // Cerrar el modal al hacer clic en la superposición
       modal.addEventListener('click', (event) => {
-        if (event.target === modal && this.settings.closeOnOverlayClick) {
+        if (event.target === modal.querySelector('.c--modal-a__overlay')) {
           this.close(modal);
         }
       });
   
+      // Cerrar el modal con la tecla Escape
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && this.isOpen(modal)) {
           this.close(modal);
@@ -64,19 +58,11 @@ class Modal {
     }
   
     open(modal) {
-      if (typeof this.settings.beforeOpen === 'function') {
-        this.settings.beforeOpen(modal);
-      }
-  
       modal.classList.add(this.settings.openClass);
       modal.setAttribute('aria-hidden', 'false');
   
       if (this.settings.disableScroll) {
         document.body.style.overflow = 'hidden';
-      }
-  
-      if (!this.settings.disableFocus) {
-        modal.focus();
       }
   
       if (typeof this.settings.onShow === 'function') {
@@ -85,10 +71,6 @@ class Modal {
     }
   
     close(modal) {
-      if (typeof this.settings.beforeClose === 'function') {
-        this.settings.beforeClose(modal);
-      }
-  
       modal.classList.remove(this.settings.openClass);
       modal.setAttribute('aria-hidden', 'true');
   
@@ -105,5 +87,6 @@ class Modal {
       return modal.classList.contains(this.settings.openClass);
     }
   }
-
+  
   export default Modal;
+  
