@@ -1,97 +1,109 @@
 class Modal {
-    constructor(config = {}) {
+    constructor(options = {}) {
       const defaults = {
-        onShow: (modal, trigger) => console.info(`${modal.id} is shown`),
-        onClose: (modal, trigger) => console.info(`${modal.id} is hidden`),
-        openTrigger: 'modal-open',
-        closeTrigger: 'modal-close',
-        openClass: 'is-open',
+        onShow: (modal) => console.info(`${modal.id} is shown`),
+        onClose: (modal) => console.info(`${modal.id} is hidden`),
+        beforeOpen: (modal) => {},
+        beforeClose: (modal) => {},
+        openTrigger: 'data-modal-open',
+        closeTrigger: 'data-modal-close',
+        openClass: 'c--modal-a--is-open',
         disableScroll: true,
         disableFocus: false,
         awaitOpenAnimation: false,
-        awaitCloseAnimation: true, // Habilitar espera por animación de cierre
+        awaitCloseAnimation: false,
         debugMode: false,
       };
   
-      this.config = { ...defaults, ...config };
-      this.modals = {};
+      this.settings = { ...defaults, ...options };
+      this.modals = document.querySelectorAll('.c--modal-a');
       this.init();
     }
   
     init() {
-      document.querySelectorAll(`[${this.config.openTrigger}]`).forEach(trigger => {
-        const modalId = trigger.getAttribute(this.config.openTrigger);
-        const modal = document.getElementById(modalId);
-  
-        if (!modal) {
-          if (this.config.debugMode) console.warn(`Modal with id ${modalId} not found`);
-          return;
+      if (this.modals.length === 0) {
+        if (this.settings.debugMode) {
+          console.error('No modals found in the document.');
         }
+        return;
+      }
   
-        this.modals[modalId] = modal;
+      this.modals.forEach((modal) => {
+        this.addEventListeners(modal);
+      });
+    }
   
-        const openListener = () => this.show(modalId, trigger);
-        trigger.addEventListener('click', openListener);
+    addEventListeners(modal) {
+      const modalId = modal.id;
+  
+      document.querySelectorAll(`[${this.settings.openTrigger}="${modalId}"]`).forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+          event.preventDefault();
+          this.open(modal);
+        });
       });
   
-      document.querySelectorAll(`[${this.config.closeTrigger}]`).forEach(closeBtn => {
-        const closeListener = () => {
-          const modal = closeBtn.closest('.modal');
-          if (modal) this.close(modal.id, closeBtn);
-        };
-  
-        closeBtn.addEventListener('click', closeListener);
+      modal.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+          event.preventDefault();
+          this.close(modal);
+        });
       });
-
-      document.addEventListener('keydown', event => {
-        if (event.key === "Escape") {
-          Object.keys(this.modals).forEach(modalId => {
-            const modal = this.modals[modalId];
-            if (modal && modal.getAttribute('aria-hidden') === 'false') {
-              this.close(modalId);
-            }
-          });
+  
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal && this.settings.closeOnOverlayClick) {
+          this.close(modal);
+        }
+      });
+  
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && this.isOpen(modal)) {
+          this.close(modal);
         }
       });
     }
   
-    show(modalId, trigger) {
-      const modal = this.modals[modalId];
-      if (!modal) return;
+    open(modal) {
+      if (typeof this.settings.beforeOpen === 'function') {
+        this.settings.beforeOpen(modal);
+      }
   
+      modal.classList.add(this.settings.openClass);
       modal.setAttribute('aria-hidden', 'false');
-      modal.classList.add(this.config.openClass);
   
-      if (this.config.disableScroll) document.body.style.overflow = 'hidden';
+      if (this.settings.disableScroll) {
+        document.body.style.overflow = 'hidden';
+      }
   
-      this.config.onShow(modal, trigger);
+      if (!this.settings.disableFocus) {
+        modal.focus();
+      }
+  
+      if (typeof this.settings.onShow === 'function') {
+        this.settings.onShow(modal);
+      }
     }
   
-    close(modalId, trigger) {
-      const modal = this.modals[modalId];
-      if (!modal) return;
+    close(modal) {
+      if (typeof this.settings.beforeClose === 'function') {
+        this.settings.beforeClose(modal);
+      }
   
-      modal.classList.add('is-closing'); // Añadir clase que inicia la animación de cierre
+      modal.classList.remove(this.settings.openClass);
+      modal.setAttribute('aria-hidden', 'true');
   
-      const endAnimation = () => {
-        modal.setAttribute('aria-hidden', 'true');
-        modal.classList.remove(this.config.openClass, 'is-closing');
-        if (this.config.disableScroll) document.body.style.overflow = '';
+      if (this.settings.disableScroll) {
+        document.body.style.overflow = '';
+      }
   
-        this.config.onClose(modal, trigger);
-        modal.removeEventListener('animationend', endAnimation);
-      };
-  
-      modal.addEventListener('animationend', endAnimation);
+      if (typeof this.settings.onClose === 'function') {
+        this.settings.onClose(modal);
+      }
     }
   
-    destroy() {
-      Object.values(this.modals).forEach(modal => {
-        modal.setAttribute('aria-hidden', 'true');
-        modal.classList.remove(this.config.openClass, 'is-closing');
-      });
-      this.modals = {};
+    isOpen(modal) {
+      return modal.classList.contains(this.settings.openClass);
     }
-}
+  }
 
-export default Modal;
+  export default Modal;
