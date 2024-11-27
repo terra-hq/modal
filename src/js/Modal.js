@@ -1,12 +1,33 @@
+/**
+ * Class representing a configurable modal dialog.
+ * Handles opening, closing, and managing modal dialogs with support for callbacks, debug messages, and dynamic selectors.
+ */
+
 class Modal {
+    /**
+   * Creates an instance of Modal.
+   * @param {Object} options - Configuration options for the modal.
+   * @param {string} [options.selector='.c--modal-a'] - Selector for the modal container. Default is `.c--modal-a`.
+   * @param {Function} [options.onShow] - Callback invoked after the modal is shown. Receives the modal element as a parameter.
+   * @param {Function} [options.onClose] - Callback invoked after the modal is hidden. Receives the modal element as a parameter.
+   * @param {Function} [options.beforeOpen] - Callback invoked before the modal is opened. Receives the modal element as a parameter.
+   * @param {Function} [options.beforeClose] - Callback invoked before the modal is closed. Receives the modal element as a parameter.
+   * @param {string} [options.openTrigger='data-modal-open'] - Attribute for open buttons. Default is `data-modal-open`.
+   * @param {string} [options.closeTrigger='data-modal-close'] - Attribute for close buttons. Default is `data-modal-close`.
+   * @param {string} [options.openClass='c--modal-a--is-open'] - Class added to the modal when it is open. Default is `c--modal-a--is-open`.
+   * @param {boolean} [options.disableScroll=true] - If true, disables body scrolling when the modal is open. Default is `true`.
+   * @param {boolean} [options.debug=false] - If true, enables debug messages in the console. Default is `false`.
+   */
+
     constructor(options = {}) {
       const defaults = {
+        selector: '.c--modal-a', // Selector configurable para el modal
         onShow: (modal) => {
-            if (options.debug) console.info(`${modal.id} is shown`);
-          },
-          onClose: (modal) => {
-            if (options.debug) console.info(`${modal.id} is hidden`);
-          },
+          if (options.debug) console.info(`${modal.id} is shown`);
+        },
+        onClose: (modal) => {
+          if (options.debug) console.info(`${modal.id} is hidden`);
+        },
         beforeOpen: (modal) => {}, // Acción antes de abrir el modal
         beforeClose: (modal) => {}, // Acción antes de cerrar el modal
         openTrigger: 'data-modal-open',
@@ -19,7 +40,7 @@ class Modal {
       this.settings = { ...defaults, ...options };
   
       this.DOM = {
-        modals: document.querySelectorAll('.c--modal-a'),
+        modals: document.querySelectorAll(this.settings.selector), // Selector dinámico
         openTriggers: document.querySelectorAll(`[${this.settings.openTrigger}]`),
         closeTriggers: document.querySelectorAll(`[${this.settings.closeTrigger}]`),
       };
@@ -38,11 +59,11 @@ class Modal {
   
     init() {
       if (this.DOM.modals.length === 0) {
-        console.error('No modals found.');
+        console.error(`No modals found with selector "${this.settings.selector}".`);
         return;
       }
   
-      this.logDebug(`Found ${this.DOM.modals.length} modals.`);
+      this.logDebug(`Found ${this.DOM.modals.length} modals with selector "${this.settings.selector}".`);
     }
   
     events() {
@@ -84,7 +105,7 @@ class Modal {
   
       // Cerrar el modal al hacer clic en la superposición
       const overlayListener = (event) => {
-        if (event.target === modal.querySelector('.c--modal-a__overlay')) {
+        if (event.target === modal.querySelector(`${this.settings.selector}__overlay`)) {
           this.logDebug(`Overlay clicked for modal ID: ${modalId}`);
           if (typeof this.settings.beforeClose === 'function') {
             this.settings.beforeClose(modal);
