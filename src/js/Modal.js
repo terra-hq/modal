@@ -28,7 +28,7 @@ class Modal {
         onClose: (modal) => {
           if (options.debug) console.info(`${modal.id} is hidden`);
         },
-        beforeOpen: (modal) => {}, // Acción antes de abrir el modal
+        beforeOpen: (modal) => {if (options.debug) console.info(`${modal.id} is hidden`);}, // Acción antes de abrir el modal
         beforeClose: (modal) => {}, // Acción antes de cerrar el modal
         openTrigger: 'data-modal-open',
         closeTrigger: 'data-modal-close',
@@ -82,6 +82,7 @@ class Modal {
             if (typeof this.settings.beforeOpen === 'function') {
               this.settings.beforeOpen(modal);
             }
+            
             this.open(modal);
           };
           trigger.addEventListener('click', openListener);
@@ -131,28 +132,36 @@ class Modal {
     }
   
     open(modal) {
+      if (typeof this.settings.beforeOpen === 'function') {
+        this.settings.beforeOpen(modal);
+      }
+    
       this.logDebug(`Opening modal ID: ${modal.id}`);
       modal.classList.add(this.settings.openClass);
       modal.setAttribute('aria-hidden', 'false');
-  
+    
       if (this.settings.disableScroll) {
         document.body.style.overflow = 'hidden';
       }
-  
+    
       if (typeof this.settings.onShow === 'function') {
         this.settings.onShow(modal);
       }
     }
-  
+    
     close(modal) {
+      if (typeof this.settings.beforeClose === 'function') {
+        this.settings.beforeClose(modal);
+      }
+    
       this.logDebug(`Closing modal ID: ${modal.id}`);
       modal.classList.remove(this.settings.openClass);
       modal.setAttribute('aria-hidden', 'true');
-  
+    
       if (this.settings.disableScroll) {
         document.body.style.overflow = '';
       }
-  
+    
       if (typeof this.settings.onClose === 'function') {
         this.settings.onClose(modal);
       }
@@ -174,4 +183,3 @@ class Modal {
   }
   
   export default Modal;
-  

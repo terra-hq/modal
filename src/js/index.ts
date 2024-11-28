@@ -7,16 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // onClose: (modal) => console.log(`${modal.id} cerrado`),
         debug: false, 
         beforeOpen: (modal) => {
-            document.getElementById('modal-1-title').innerHTML = `hola`
+            console.log('por abrir')
         }, // Acción antes de abrir el modal
     });
 
 
 
-    document.querySelector('.js--fire').addEventListener('click', (e) => {
-        e.preventDefault();
-        modal.open(document.querySelector('#modal-1'));
-    });
-
+    
 
 });

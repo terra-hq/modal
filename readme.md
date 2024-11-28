@@ -81,3 +81,8 @@ counter.destroy(); // Clean up the instance and stop animations
 | `isOpen(modal)`  | Returns `true` if the modal is currently open.         |
 | `destroy()`      | Removes all event listeners and cleans up resources.  |
 
+
+### ChangeLog
+
+0.0.01 - First Release
+0.0.02 - Update callbacks when using custom triggers
