@@ -24,6 +24,7 @@ class c {
         e.debug && console.info(`${s.id} is hidden`);
       },
       beforeOpen: (s) => {
+        e.debug && console.info(`${s.id} is hidden`);
       },
       // Acción antes de abrir el modal
       beforeClose: (s) => {
@@ -81,10 +82,10 @@ class c {
     document.addEventListener("keydown", l), this.eventListeners.push({ element: document, type: "keydown", listener: l });
   }
   open(e) {
-    this.logDebug(`Opening modal ID: ${e.id}`), e.classList.add(this.settings.openClass), e.setAttribute("aria-hidden", "false"), this.settings.disableScroll && (document.body.style.overflow = "hidden"), typeof this.settings.onShow == "function" && this.settings.onShow(e);
+    typeof this.settings.beforeOpen == "function" && this.settings.beforeOpen(e), this.logDebug(`Opening modal ID: ${e.id}`), e.classList.add(this.settings.openClass), e.setAttribute("aria-hidden", "false"), this.settings.disableScroll && (document.body.style.overflow = "hidden"), typeof this.settings.onShow == "function" && this.settings.onShow(e);
   }
   close(e) {
-    this.logDebug(`Closing modal ID: ${e.id}`), e.classList.remove(this.settings.openClass), e.setAttribute("aria-hidden", "true"), this.settings.disableScroll && (document.body.style.overflow = ""), typeof this.settings.onClose == "function" && this.settings.onClose(e);
+    typeof this.settings.beforeClose == "function" && this.settings.beforeClose(e), this.logDebug(`Closing modal ID: ${e.id}`), e.classList.remove(this.settings.openClass), e.setAttribute("aria-hidden", "true"), this.settings.disableScroll && (document.body.style.overflow = ""), typeof this.settings.onClose == "function" && this.settings.onClose(e);
   }
   isOpen(e) {
     return e.classList.contains(this.settings.openClass);

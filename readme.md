@@ -86,3 +86,4 @@ counter.destroy(); // Clean up the instance and stop animations
 
 0.0.01 - First Release
 0.0.02 - Update callbacks when using custom triggers
+0.0.03 - Update dist from custom triggers
