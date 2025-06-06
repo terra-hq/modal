@@ -25,6 +25,7 @@ class Modal {
         onShow: (modal) => {
           if (options.debug) console.info(`${modal.id} is shown`);
         },
+        
         onClose: (modal) => {
           if (options.debug) console.info(`${modal.id} is hidden`);
         },
@@ -148,10 +149,9 @@ class Modal {
         this.settings.onShow(modal);
       }
     }
-    
-    close(modal) {
+    async close(modal) {
       if (typeof this.settings.beforeClose === 'function') {
-        this.settings.beforeClose(modal);
+        await this.settings.beforeClose(modal);
       }
     
       this.logDebug(`Closing modal ID: ${modal.id}`);
