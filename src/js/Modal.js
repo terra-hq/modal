@@ -79,10 +79,10 @@ class Modal {
         if (trigger.getAttribute(this.settings.openTrigger) === modalId) {
           const openListener = (event) => {
             event.preventDefault();
-            this.logDebug(`Open trigger clicked for modal ID: ${modalId}`);
-            if (typeof this.settings.beforeOpen === 'function') {
-              this.settings.beforeOpen(modal);
-            }
+            // this.logDebug(`Open trigger clicked for modal ID: ${modalId}`);
+            // if (typeof this.settings.beforeOpen === 'function') {
+            //   this.settings.beforeOpen(modal);
+            // }
             
             this.open(modal);
           };
