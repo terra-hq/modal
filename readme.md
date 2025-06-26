@@ -31,10 +31,6 @@ const modal = new Modal({
     onClose: (modal) => console.log(`Modal ${modal.id} is now hidden`),
   });
 
-// Additional methods
-counter.play(); // Start the animation manually
-counter.update(); // Update the ScrollTrigger position
-counter.destroy(); // Clean up the instance and stop animations
 ```
 ### HTML
 ```html
@@ -60,10 +56,10 @@ counter.destroy(); // Clean up the instance and stop animations
 | Option         | Type       | Default                | Description                                                       |
 |-----------------|------------|------------------------|-------------------------------------------------------------------|
 | `selector`      | `string`   | `.c--modal-a`          | CSS selector for the modal container.                            |
-| `onShow`        | `Function` | `null`                 | Callback after the modal is shown. Receives the modal element.    |
-| `onClose`       | `Function` | `null`                 | Callback after the modal is hidden. Receives the modal element.   |
-| `beforeOpen`    | `Function` | `null`                 | Callback before the modal is opened. Receives the modal element.  |
-| `beforeClose`   | `Function` | `null`                 | Callback before the modal is closed. Receives the modal element.  |
+| `onShow`        | `Function` | `null`                 | Callback after the modal is shown. Receives the modal element and trigger info. |
+| `onClose`       | `Function` | `null`                 | Callback after the modal is hidden. Receives the modal element and trigger info. |
+| `beforeOpen`    | `Function` | `null`                 | Callback before the modal is opened. Receives the modal element and trigger info. |
+| `beforeClose`   | `Function` | `null`                 | Callback before the modal is closed. Receives the modal element and trigger info. |
 | `openTrigger`   | `string`   | `data-modal-open`      | Attribute for open buttons.                                       |
 | `closeTrigger`  | `string`   | `data-modal-close`     | Attribute for close buttons.                                      |
 | `openClass`     | `string`   | `c--modal-a--is-open`  | Class added to the modal when it is open.                         |
@@ -72,18 +68,85 @@ counter.destroy(); // Clean up the instance and stop animations
 
 ---
 
+### Callback Trigger Information
+
+All callback functions (`onShow`, `onClose`, `beforeOpen`, `beforeClose`) receive two parameters:
+1. **modal**: The modal element
+2. **triggerInfo**: Object containing information about what triggered the modal action
+
+#### Trigger Info Types
+
+**Element Trigger (buttons, links):**
+```javascript
+{
+  type: 'element',
+  element: HTMLElement,
+  tagName: 'button',
+  text: 'Open Modal',
+  id: 'button-id'
+}
+```
+
+**Programmatic Trigger:**
+```javascript
+{
+  type: 'programmatic',
+  source: 'manual',
+  method: 'open()'
+}
+```
+
+**Close Triggers:**
+- **Close button**: `{ type: 'element', action: 'close', ... }`
+- **Overlay click**: `{ type: 'overlay', action: 'close' }`
+- **Escape key**: `{ type: 'keyboard', key: 'Escape', action: 'close' }`
+
+#### Example Usage:
+```javascript
+const modal = new Modal({
+    onShow: (modal, trigger) => {
+        console.log(`Modal ${modal.id} opened by:`, trigger.type);
+        if (trigger.type === 'element') {
+            console.log(`Triggered by: ${trigger.text}`);
+        }
+    },
+    
+    onClose: (modal, trigger) => {
+        console.log(`Modal ${modal.id} closed by:`, trigger.type);
+        if (trigger.type === 'keyboard') {
+            console.log(`Closed with ${trigger.key} key`);
+        }
+    }
+});
+
+// Custom programmatic call with trigger info
+modal.open(modalElement, {
+    type: 'custom',
+    source: 'my-action',
+    data: { userId: 123 }
+});
+```
+
+---
+
 ### Public Methods
 
 | Method          | Description                                           |
 |------------------|-------------------------------------------------------|
-| `open(modal)`    | Opens the specified modal programmatically.           |
-| `close(modal)`   | Closes the specified modal programmatically.          |
+| `open(modal, triggerInfo)`    | Opens the specified modal programmatically. Optional triggerInfo parameter. |
+| `close(modal, triggerInfo)`   | Closes the specified modal programmatically. Optional triggerInfo parameter. |
 | `isOpen(modal)`  | Returns `true` if the modal is currently open.         |
 | `destroy()`      | Removes all event listeners and cleans up resources.  |
 
 
 ### ChangeLog
 
-0.0.01 - First Release
-0.0.02 - Update callbacks when using custom triggers
-0.0.03 - Update dist from custom triggers
+**0.0.05** - Current version
+
+**0.0.04** - Version update
+
+**0.0.03** - Update dist from custom triggers
+
+**0.0.02** - Update callbacks when using custom triggers
+
+**0.0.01** - First Release

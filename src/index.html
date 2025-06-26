@@ -19,29 +19,51 @@
         <div class="f--container">
             <div class="f--row">
                 <div class="f--col-12">
-                    <h1 class="f--mb-3 f--mt-3">Modal </h1>
-     
+                    <h1 class="f--mb-3 f--mt-3">Modal Examples</h1>
+                    <p>Open the browser console to see the callback logs.</p>
                     
-                    <!-- Botón para abrir el Modal -->
-                    <button data-modal-open="modal-1">Abrir Modal 1</button>
-                    <button data-modal-open="modal-2">Abrir Modal 2</button>
+                    <!-- Basic Examples -->
+                    <div class="f--mb-3">
+                        <button class="f--mr-2" data-modal-open="modal-1">Open Modal 1</button>
+                        <button class="f--mr-2" data-modal-open="modal-2">Open Modal 2</button>
+                        <a href="#" class="js--fire">Open with Custom Event</a>
+                    </div>
 
-                    <a href="" class="js--fire">open the modal with custom event</a>
-
-                    <!-- Modal -->
+                    <!-- Modal 1 -->
                     <div class="c--modal-a" id="modal-1" aria-hidden="true">
                         <div class="c--modal-a__overlay" data-modal-close>
                             <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-                            <h2 id="modal-1-title">El Modal</h2>
-                            <button aria-label="Cerrar modal" data-modal-close>×</button>
-                            <p>Este es el contenido del modal.</p>
+                                <h2 id="modal-1-title">Modal 1</h2>
+                                <button aria-label="Close modal" data-modal-close>×</button>
+                                <p>This is modal 1. Check the console for callback logs.</p>
+                                <button data-modal-close class="f--mt-2">Close Modal</button>
                             </div>
                         </div>
                     </div>
 
-       
+                    <!-- Modal 2 -->
+                    <div class="c--modal-a" id="modal-2" aria-hidden="true">
+                        <div class="c--modal-a__overlay" data-modal-close>
+                            <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
+                                <h2 id="modal-2-title">Modal 2</h2>
+                                <button aria-label="Close modal" data-modal-close>×</button>
+                                <p>This is modal 2. Check the console for callback logs.</p>
+                                <button data-modal-close class="f--mt-2">Close Modal</button>
+                            </div>
+                        </div>
+                    </div>
 
-  
+                    <!-- Programmatic Modal -->
+                    <div class="c--modal-a" id="modal-programmatic" aria-hidden="true">
+                        <div class="c--modal-a__overlay" data-modal-close>
+                            <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-programmatic-title">
+                                <h2 id="modal-programmatic-title">Programmatic Modal</h2>
+                                <button aria-label="Close modal" data-modal-close>×</button>
+                                <p>This modal was opened with a custom event. Check the console!</p>
+                                <button data-modal-close class="f--mt-2">Close Modal</button>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

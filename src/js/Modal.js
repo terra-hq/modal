@@ -8,10 +8,10 @@ class Modal {
    * Creates an instance of Modal.
    * @param {Object} options - Configuration options for the modal.
    * @param {string} [options.selector='.c--modal-a'] - Selector for the modal container. Default is `.c--modal-a`.
-   * @param {Function} [options.onShow] - Callback invoked after the modal is shown. Receives the modal element as a parameter.
-   * @param {Function} [options.onClose] - Callback invoked after the modal is hidden. Receives the modal element as a parameter.
-   * @param {Function} [options.beforeOpen] - Callback invoked before the modal is opened. Receives the modal element as a parameter.
-   * @param {Function} [options.beforeClose] - Callback invoked before the modal is closed. Receives the modal element as a parameter.
+   * @param {Function} [options.onShow] - Callback invoked after the modal is shown. Receives the modal element and trigger info as parameters.
+   * @param {Function} [options.onClose] - Callback invoked after the modal is hidden. Receives the modal element and trigger info as parameters.
+   * @param {Function} [options.beforeOpen] - Callback invoked before the modal is opened. Receives the modal element and trigger info as parameters.
+   * @param {Function} [options.beforeClose] - Callback invoked before the modal is closed. Receives the modal element and trigger info as parameters.
    * @param {string} [options.openTrigger='data-modal-open'] - Attribute for open buttons. Default is `data-modal-open`.
    * @param {string} [options.closeTrigger='data-modal-close'] - Attribute for close buttons. Default is `data-modal-close`.
    * @param {string} [options.openClass='c--modal-a--is-open'] - Class added to the modal when it is open. Default is `c--modal-a--is-open`.
@@ -79,12 +79,16 @@ class Modal {
         if (trigger.getAttribute(this.settings.openTrigger) === modalId) {
           const openListener = (event) => {
             event.preventDefault();
-            // this.logDebug(`Open trigger clicked for modal ID: ${modalId}`);
-            // if (typeof this.settings.beforeOpen === 'function') {
-            //   this.settings.beforeOpen(modal);
-            // }
             
-            this.open(modal);
+            const triggerInfo = {
+              type: 'element',
+              element: trigger,
+              tagName: trigger.tagName.toLowerCase(),
+              text: trigger.textContent?.trim() || '',
+              id: trigger.id || null
+            };
+            
+            this.open(modal, triggerInfo);
           };
           trigger.addEventListener('click', openListener);
           this.eventListeners.push({ element: trigger, type: 'click', listener: openListener });
@@ -96,10 +100,17 @@ class Modal {
         const closeListener = (event) => {
           event.preventDefault();
           this.logDebug(`Close trigger clicked for modal ID: ${modalId}`);
-          if (typeof this.settings.beforeClose === 'function') {
-            this.settings.beforeClose(modal);
-          }
-          this.close(modal);
+          
+          const triggerInfo = {
+            type: 'element',
+            element: trigger,
+            tagName: trigger.tagName.toLowerCase(),
+            text: trigger.textContent?.trim() || '',
+            id: trigger.id || null,
+            action: 'close'
+          };
+          
+          this.close(modal, triggerInfo);
         };
         trigger.addEventListener('click', closeListener);
         this.eventListeners.push({ element: trigger, type: 'click', listener: closeListener });
@@ -109,10 +120,14 @@ class Modal {
       const overlayListener = (event) => {
         if (event.target === modal.querySelector(`${this.settings.selector}__overlay`)) {
           this.logDebug(`Overlay clicked for modal ID: ${modalId}`);
-          if (typeof this.settings.beforeClose === 'function') {
-            this.settings.beforeClose(modal);
-          }
-          this.close(modal);
+          
+          const triggerInfo = {
+            type: 'overlay',
+            element: event.target,
+            action: 'close'
+          };
+          
+          this.close(modal, triggerInfo);
         }
       };
       modal.addEventListener('click', overlayListener);
@@ -122,19 +137,30 @@ class Modal {
       const escapeListener = (event) => {
         if (event.key === 'Escape' && this.isOpen(modal)) {
           this.logDebug(`Escape key pressed for modal ID: ${modalId}`);
-          if (typeof this.settings.beforeClose === 'function') {
-            this.settings.beforeClose(modal);
-          }
-          this.close(modal);
+          
+          const triggerInfo = {
+            type: 'keyboard',
+            key: event.key,
+            action: 'close'
+          };
+          
+          this.close(modal, triggerInfo);
         }
       };
       document.addEventListener('keydown', escapeListener);
       this.eventListeners.push({ element: document, type: 'keydown', listener: escapeListener });
     }
   
-    open(modal) {
+    open(modal, triggerInfo = null) {
+      // If no trigger info provided, assume programmatic call
+      const trigger = triggerInfo || {
+        type: 'programmatic',
+        source: 'manual',
+        method: 'open()'
+      };
+
       if (typeof this.settings.beforeOpen === 'function') {
-        this.settings.beforeOpen(modal);
+        this.settings.beforeOpen(modal, trigger);
       }
     
       this.logDebug(`Opening modal ID: ${modal.id}`);
@@ -146,12 +172,20 @@ class Modal {
       }
     
       if (typeof this.settings.onShow === 'function') {
-        this.settings.onShow(modal);
+        this.settings.onShow(modal, trigger);
       }
     }
-    async close(modal) {
+    async close(modal, triggerInfo = null) {
+      // If no trigger info provided, assume programmatic call
+      const trigger = triggerInfo || {
+        type: 'programmatic',
+        source: 'manual',
+        method: 'close()',
+        action: 'close'
+      };
+
       if (typeof this.settings.beforeClose === 'function') {
-        await this.settings.beforeClose(modal);
+        await this.settings.beforeClose(modal, trigger);
       }
     
       this.logDebug(`Closing modal ID: ${modal.id}`);
@@ -163,7 +197,7 @@ class Modal {
       }
     
       if (typeof this.settings.onClose === 'function') {
-        this.settings.onClose(modal);
+        this.settings.onClose(modal, trigger);
       }
     }
   
