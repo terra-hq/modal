@@ -80,7 +80,7 @@ All callback functions (`onShow`, `onClose`, `beforeOpen`, `beforeClose`) receiv
 ```javascript
 {
   type: 'element',
-  element: HTMLElement,
+  element: buttonElement,
   tagName: 'button',
   text: 'Open Modal',
   id: 'button-id'
