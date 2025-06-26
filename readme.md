@@ -141,7 +141,9 @@ modal.open(modalElement, {
 
 ### ChangeLog
 
-**0.0.05** - Current version
+**0.0.06** - Recent update 
+
+**0.0.05** - Refactor callbacks 
 
 **0.0.04** - Version update
 
