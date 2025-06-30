@@ -141,7 +141,14 @@ modal.open(modalElement, {
 
 ### ChangeLog
 
-**0.0.06** - Recent update 
+
+**0.0.08** - All callback functions (onShow, onClose, beforeOpen, beforeClose) receive two parameters:
+
+ - modal: The modal element
+- triggerInfo: Object containing information about what triggered the modal action
+
+
+**0.0.07** - Refactor doc
 
 **0.0.05** - Refactor callbacks 
 
