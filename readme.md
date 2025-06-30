@@ -27,8 +27,8 @@ import Modal from "@terrahq/modal";
 const modal = new Modal({
     selector: '#my-modal',
     debug: true,
-    onShow: (modal) => console.log(`Modal ${modal.id} is now visible`),
-    onClose: (modal) => console.log(`Modal ${modal.id} is now hidden`),
+    onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+    onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
   });
 
 ```
