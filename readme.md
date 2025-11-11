@@ -151,3 +151,33 @@ m.destroy(); // removes all listeners, ESC binding, etc.
 ```
 
 
+### ChangeLog
+## 0.0.09 – Enhanced Error Handling & Stability
+
+- Added safe error handling when opening or closing modals.  
+  The instance no longer throws runtime errors if the selector is invalid or `null`; instead, a clear console message is displayed  
+  (e.g., “No modal Element found...”).
+- Added internal `_report()` helper to produce readable error messages and optionally trigger `onError`.
+- Added `_disabled` flag to safely prevent actions when initialization fails.
+- `open()` and `close()` now validate the provided modal element before accessing its properties.
+- All logic remains backward-compatible with previous versions.
+- Refactored Escape key handling so that the listener is only attached while the modal is open, improving performance and preventing leaks.
+
+**0.0.08** - All callback functions (onShow, onClose, beforeOpen, beforeClose) receive two parameters:
+
+ - modal: The modal element
+- triggerInfo: Object containing information about what triggered the modal action
+
+**0.0.07** - Refactor doc
+
+**0.0.05** - Refactor callbacks 
+
+**0.0.04** - Version update
+
+**0.0.03** - Update dist from custom triggers
+
+**0.0.02** - Update callbacks when using custom triggers
+
+**0.0.01** - First Release
+
+

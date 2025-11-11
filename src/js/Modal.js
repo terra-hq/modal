@@ -14,6 +14,7 @@ class Modal {
    * @param {string} [options.openTrigger='data-modal-open']
    * @param {string} [options.closeTrigger='data-modal-close']
    * @param {string} [options.openClass='c--modal-a--is-open']
+   * @param {string} [options.overlaySelector='[data-modal-overlay]']
    * @param {boolean} [options.disableScroll=true]
    * @param {boolean} [options.debug=false]
    */
@@ -38,6 +39,7 @@ class Modal {
       openTrigger: 'data-modal-open',
       closeTrigger: 'data-modal-close',
       openClass: 'c--modal-a--is-open',
+      overlaySelector: '[data-modal-overlay]',
       disableScroll: true,
       debug: false,
     };
@@ -147,8 +149,9 @@ class Modal {
       this.eventListeners.push({ element: trigger, type: 'click', listener: closeListener });
     });
 
-    // Overlay click
-    const overlay = modal.querySelector('[data-modal-overlay], .c--modal-a__overlay');
+    // Overlay click (flexible)
+    const overlay = modal.querySelector(this.settings.overlaySelector);
+
     if (overlay) {
       const onOverlayClick = (event) => {
         if (event.target === overlay) {
@@ -159,6 +162,17 @@ class Modal {
       };
       overlay.addEventListener('click', onOverlayClick);
       this.eventListeners.push({ element: overlay, type: 'click', listener: onOverlayClick });
+    } else {
+      // fallback: allow clicking on modal root if no overlay found
+      const onRootClick = (event) => {
+        if (event.target === modal) {
+          this.logDebug(`Root clicked (fallback) for modal ID: ${modalId}`);
+          const triggerInfo = { type: 'overlay-fallback', element: modal, action: 'close' };
+          this.close(modal, triggerInfo);
+        }
+      };
+      modal.addEventListener('click', onRootClick);
+      this.eventListeners.push({ element: modal, type: 'click', listener: onRootClick });
     }
   }
 
