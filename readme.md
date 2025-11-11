@@ -38,12 +38,11 @@ npm install @terrahq/modal
 
 <!-- Modal -->
 <div id="my-modal" class="c--modal-a" aria-hidden="true">
-  <div class="c--modal-a__overlay" data-modal-close>
-    <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <h2 id="modal-title">Basic Modal</h2>
-      <p>This is a simple modal example.</p>
-      <button data-modal-close>Close</button>
-    </div>
+  <div class="c--modal-a__overlay" data-modal-close></div>
+  <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h2 id="modal-title">Basic Modal</h2>
+    <p>This is a simple modal example.</p>
+    <button data-modal-close>Close</button>
   </div>
 </div>
 ```
@@ -134,20 +133,33 @@ m.destroy(); // removes all listeners, ESC binding, etc.
 
 ```scss
 .c--modal-a {
-  display: none;
-  position: fixed; inset: 0;
-  justify-content: center; align-items: center;
+  position: fixed;
+  inset: 0;
   background: rgba(0,0,0,.5);
-  opacity: 0; pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
   transition: opacity .2s ease;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
 }
-.c--modal-a--is-open { opacity: 1; pointer-events: auto; }
-.c--modal-a__overlay { position: absolute; inset: 0; }
+.c--modal-a--is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.c--modal-a__overlay {
+  position: absolute;
+  inset: 0;
+}
 .c--modal-a__item {
-  position: relative; background: #fff; padding: 1.25rem;
-  border-radius: .5rem; max-width: 560px; width: 90%;
+  position: relative;
+  background: #fff;
+  padding: 1.25rem;
+  border-radius: .5rem;
+  max-width: 560px;
+  width: 90%;
   box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  max-height: 80vh;
+  overflow: auto;
 }
 ```
 
