@@ -62,18 +62,19 @@ const modal = new Modal({
 
 ## ⚙️ Constructor Parameters
 
-| Option          | Type                    | Default               | Description                                                         |
-| --------------- | ----------------------- | --------------------- | ------------------------------------------------------------------- |
-| `selector`      | `string \| HTMLElement` | `.c--modal-a`         | Selector CSS o elemento DOM del contenedor del modal.               |
-| `onShow`        | `Function \| null`      | `null`                | Callback después de abrir. `(modal, triggerInfo) => void`           |
-| `onClose`       | `Function \| null`      | `null`                | Callback después de cerrar. `(modal, triggerInfo) => void`          |
-| `beforeOpen`    | `Function \| null`      | `null`                | Callback antes de abrir. `(modal, triggerInfo) => boolean \| void`  |
-| `beforeClose`   | `Function \| null`      | `null`                | Callback antes de cerrar. `(modal, triggerInfo) => boolean \| void` |
-| `openTrigger`   | `string`                | `data-modal-open`     | Atributo para los botones/enlaces que **abren** el modal.           |
-| `closeTrigger`  | `string`                | `data-modal-close`    | Atributo para los botones/enlaces que **cierran** el modal.         |
-| `openClass`     | `string`                | `c--modal-a--is-open` | Clase añadida al modal cuando está abierto.                         |
-| `disableScroll` | `boolean`               | `true`                | Bloquea el scroll del `<body>` mientras el modal está abierto.      |
-| `debug`         | `boolean`               | `false`               | Activa logs útiles en consola para depuración.                      |
+| Option          | Type               | Default               | Description                                                                     |
+| --------------- | ------------------ | --------------------- | ------------------------------------------------------------------------------- |
+| `selector`      | `HTMLElement`      | — (required)          | The DOM element representing the modal container (Element only, no strings).    |
+| `onShow`        | `Function \| null` | `null`                | Callback executed **after** the modal is opened. `(modal, triggerInfo) => void` |
+| `onClose`       | `Function \| null` | `null`                | Callback executed **after** the modal is closed. `(modal, triggerInfo) => void` |
+| `beforeOpen`    | `Function \| null` | `null`                | Callback executed **before** opening. `(modal, triggerInfo) => boolean \| void` |
+| `beforeClose`   | `Function \| null` | `null`                | Callback executed **before** closing. `(modal, triggerInfo) => boolean \| void` |
+| `openTrigger`   | `string`           | `data-modal-open`     | Attribute used on buttons/links that **open** the modal.                        |
+| `closeTrigger`  | `string`           | `data-modal-close`    | Attribute used on buttons/links that **close** the modal.                       |
+| `openClass`     | `string`           | `c--modal-a--is-open` | Class added to the modal element when it is open.                               |
+| `disableScroll` | `boolean`          | `true`                | Prevents `<body>` scrolling while the modal is open.                            |
+| `debug`         | `boolean`          | `false`               | Enables helpful console logs for debugging and testing.                         |
+
 
 ## 🧪 Programmatic Control
 
