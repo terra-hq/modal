@@ -1,53 +1,82 @@
 import "./../scss/style.scss";
 import Modal from "./Modal";
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Simple modal instance with all callbacks for demonstration
-    const modal = new Modal({
-        debug: true,
-        
-        beforeOpen: (modal, trigger) => {
-            console.log(`Before opening modal: ${modal.id}`);
-            console.log('Triggered by:', trigger);
-        },
-        
-        onShow: (modal, trigger) => {
-            console.log(`Modal opened: ${modal.id}`);
-            console.log('Opened by:', trigger);
-        },
-        
-        beforeClose: (modal, trigger) => {
-            console.log(`Before closing modal: ${modal.id}`);
-            console.log('Close triggered by:', trigger);
-        },
-        
-        onClose: (modal, trigger) => {
-            console.log(`Modal closed: ${modal.id}`);
-            console.log('Closed by:', trigger);
-        }
-    });
 
-    // Custom event for the js--fire link
-    const fireLink = document.querySelector('.js--fire');
-    if (fireLink) {
-        fireLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log('Custom event triggered!');
-            
-            const programmaticModal = document.getElementById('modal-programmatic');
-            
-            // Create custom trigger info for this programmatic call
-            const customTrigger = {
-                type: 'custom',
-                element: fireLink,
-                source: 'js--fire link',
-                method: 'custom event'
-            };
-            
-            modal.open(programmaticModal, customTrigger);
-        });
-    }
 
-    console.log('Modal initialized with debug enabled - check console for events');
-    console.log('Now callbacks receive both modal and trigger information!');
+const modal1 = new Modal({
+  selector: document.getElementById('modal-1'),
+  debug: true,
+  onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+  onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
 });
+
+const modal2 = new Modal({
+  selector: document.getElementById('modal-2'),
+  debug: true,
+  onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+  onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
+});
+
+
+const busyModal = new Modal({
+  selector: document.getElementById('busy'),
+  debug: true,
+  onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+  onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
+});
+
+const btn = document.querySelector('.js--advanced');
+btn.addEventListener("click", (e) => {
+  e.preventDefault();
+  busyModal.open(document.getElementById("busy"));
+});
+
+
+const programatic = new Modal({
+  selector: document.getElementById('modal-programmatic'),
+  debug: true,
+  onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+  onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const fireLink = document.querySelector('.js--fire');
+  if (fireLink) {
+    fireLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Custom event triggered!');
+      
+      const programmaticModal = document.getElementById('modal-programmatic');
+
+      // Create custom trigger info for this programmatic call
+      const customTrigger = {
+        type: 'custom',
+        element: fireLink,
+        source: 'js--fire',
+        method: 'custom event'
+      };
+
+      programatic.open(programmaticModal, customTrigger);
+    });
+  }
+})
+
+
+
+const toggleModal = new Modal({
+  selector: document.getElementById('toggle'),
+  debug: true,
+  onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
+  onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const fireLink = document.querySelector('.js--toggle-btn');
+  if (fireLink) {
+    fireLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleModal.toggle();
+    });
+  }
+})

@@ -1,77 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Modal - by Terra</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal — Terra Examples</title>
 
-        <link rel="stylesheet" href="https://unpkg.com/@terrahq/design-system@latest/dist/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@terrahq/design-system@latest/dist/style.css" />
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
-    </head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+  </head>
 
-    <body>
-        <div class="f--container">
-            <div class="f--row">
-                <div class="f--col-12">
-                    <h1 class="f--mb-3 f--mt-3">Modal Examples</h1>
-                    <p>Open the browser console to see the callback logs.</p>
-                    
-                    <!-- Basic Examples -->
-                    <div class="f--mb-3">
-                        <button class="f--mr-2" data-modal-open="modal-1">Open Modal 1</button>
-                        <button class="f--mr-2" data-modal-open="modal-2">Open Modal 2</button>
-                        <a href="#" class="js--fire">Open with Custom Event</a>
-                    </div>
+  <body>
+    <div class="f--container">
+      <div class="f--row">
+        <div class="f--col-12">
+          <h1 class="u--mb-3 u--mt-3">Terra Modal Gallery</h1>
+          <p class="u--mb-1">Open your browser console to see lifecycle callbacks and events.</p>
 
-                    <!-- Modal 1 -->
-                    <div class="c--modal-a" id="modal-1" aria-hidden="true">
-                        <div class="c--modal-a__overlay" data-modal-close>
-                            <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-                                <h2 id="modal-1-title">Modal 1</h2>
-                                <button aria-label="Close modal" data-modal-close>×</button>
-                                <p>This is modal 1. Check the console for callback logs.</p>
-                                <button data-modal-close class="f--mt-2">Close Modal</button>
-                            </div>
-                        </div>
-                    </div>
+          <!-- Triggers -->
+          <div class="u--mb-3">
+            <button class="c--btn-a" data-modal-open="modal-1" aria-controls="modal-1" aria-haspopup="dialog">
+              Open Basic Modal
+            </button>
+            <button class="c--btn-a" data-modal-open="modal-2" aria-controls="modal-2" aria-haspopup="dialog">
+              Open Embedded Modal
+            </button>
+            <button class="c--btn-a js--fire" aria-controls="modal-programmatic" aria-haspopup="dialog">
+              Fire Custom Event
+            </button>
+          </div>
 
-                    <!-- Modal 2 -->
-                    <div class="c--modal-a" id="modal-2" aria-hidden="true">
-                        <div class="c--modal-a__overlay" data-modal-close>
-                            <div class="c--modal-a__item" data-open="embed" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
-                                <!-- <h2 id="modal-2-title">Modal 2</h2>
-                                <button aria-label="Close modal" data-modal-close>×</button>
-                                <p>This is modal 2. Check the console for callback logs.</p>
-                                <button data-modal-close class="f--mt-2">Close Modal</button> -->
-                            </div>
-                        </div>
-                    </div>
+          <div class="u--mb-3">
+            <button class="c--btn-a js--advanced" aria-controls="modal-1" aria-haspopup="dialog">
+              Open Modal 1 (advanced)
+            </button>
+            <button class="c--btn-a js--toggle-btn" aria-controls="modal-1" aria-haspopup="dialog">
+                Toggle
+              </button>
+          </div>
 
-                    <!-- Programmatic Modal -->
-                    <div class="c--modal-a" id="modal-programmatic" aria-hidden="true">
-                        <div class="c--modal-a__overlay" data-modal-close>
-                            <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-programmatic-title">
-                                <h2 id="modal-programmatic-title">Programmatic Modal</h2>
-                                <button aria-label="Close modal" data-modal-close>×</button>
-                                <p>This modal was opened with a custom event. Check the console!</p>
-                                <button data-modal-close class="f--mt-2">Close Modal</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+          <!-- Modal 1 -->
+          <div class="c--modal-a" id="modal-1" aria-hidden="true">
+            <div class="c--modal-a__overlay" data-modal-close>
+              <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-1-title" aria-describedby="modal-1-desc">
+                <h2 id="modal-1-title">Basic Modal</h2>
+                <button aria-label="Close modal" data-modal-close>×</button>
+                <p id="modal-1-desc">
+                  A minimal dialog for simple content and actions. Check the console to see <em>onShow</em> and <em>onClose</em> callbacks.
+                </p>
+                <button data-modal-close class="f--mt-2">Close</button>
+              </div>
             </div>
+          </div>
+
+          <!-- Modal 2 (Embedded) -->
+          <div class="c--modal-a" id="modal-2" aria-hidden="true">
+            <div class="c--modal-a__overlay" data-modal-close>
+              <div class="c--modal-a__item" data-open="embed" role="dialog" aria-modal="true" aria-labelledby="modal-2-title" aria-describedby="modal-2-desc">
+                <h2 id="modal-2-title">Embedded Content</h2>
+                <button aria-label="Close modal" data-modal-close>×</button>
+                <p id="modal-2-desc">
+                  Ideal for richer layouts (forms, media, etc.). This variant uses <code>data-open="embed"</code>.
+                </p>
+                <button data-modal-close class="f--mt-2">Got it</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Programmatic Modal -->
+          <div class="c--modal-a" id="modal-programmatic" aria-hidden="true">
+            <div class="c--modal-a__overlay" data-modal-close>
+              <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-programmatic-title" aria-describedby="modal-programmatic-desc">
+                <h2 id="modal-programmatic-title">Opened via Custom Event</h2>
+                <button aria-label="Close modal" data-modal-close>×</button>
+                <p id="modal-programmatic-desc">
+                  This dialog was opened programmatically (e.g. from an event or controller). Inspect the console for details.
+                </p>
+                <button data-modal-close class="f--mt-2">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Busy Example -->
+          <div class="c--modal-a" id="busy" aria-hidden="true">
+            <div class="c--modal-a__overlay" data-modal-close>
+              <div class="c--modal-a__item" data-open="embed" role="dialog" aria-modal="true" aria-labelledby="busy-title" aria-describedby="busy-desc">
+                <h2 id="busy-title">Please Wait…</h2>
+                <button aria-label="Close modal" data-modal-close>×</button>
+                <p id="busy-desc">
+                  We’re processing your request. This is a non-blocking “busy” state you can show during async operations.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toggle Example -->
+          <div class="c--modal-a" id="toggle" aria-hidden="true">
+            <div class="c--modal-a__overlay" data-modal-close>
+              <div class="c--modal-a__item" data-open="embed" role="dialog" aria-modal="true" aria-labelledby="toggle-title" aria-describedby="toggle-desc">
+                <h2 id="toggle-title">Quick Toggle</h2>
+                <button aria-label="Close modal" data-modal-close>×</button>
+                <p id="toggle-desc">
+                  A lightweight modal to demo open/close toggling from different triggers.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
+      </div>
+    </div>
 
-
-
-
-        <script type="module" src="./js/index.js"></script>
-    </body>
+    <script type="module" src="./js/index.js"></script>
+  </body>
 </html>
