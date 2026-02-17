@@ -1,14 +1,14 @@
 {
     "name": "@terrahq/modal",
     "private": false,
-    "version": "0.0.09",
+    "version": "0.0.10",
     "type": "module",
     "main": "./dist/Modal.umd.js",
     "module": "./dist/Modal.es.js",
     "exports": {
         ".": {
             "import": "./dist/Modal.es.js",
-            "require": "./dist/Modal.umd.cjs"
+            "require": "./dist/Modal.umd.js"
         }
     },
     "scripts": {

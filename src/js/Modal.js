@@ -73,12 +73,6 @@ class Modal {
 
     this.DOM = {
       modal: this.settings.selector,
-      openTriggers: document.querySelectorAll(
-        `[${this.settings.openTrigger}="${this.settings.selector.id}"]`
-      ),
-      closeTriggers: this.settings.selector.querySelectorAll(
-        `[${this.settings.closeTrigger}]`
-      ),
     };
 
     this._busy = false;
@@ -86,6 +80,7 @@ class Modal {
     this._attachEsc = null;
     this._disabled = false;
     this.eventListeners = [];
+    this._delegatedOpen = null;
 
     this.init();
     this.events();
@@ -109,24 +104,26 @@ class Modal {
   addEventListeners(modal) {
     const modalId = modal.id;
 
-    // Open triggers
-    this.DOM.openTriggers.forEach((trigger) => {
-      if (trigger.getAttribute(this.settings.openTrigger) === modalId) {
-        const openListener = (event) => {
-          event.preventDefault();
-          const triggerInfo = {
-            type: 'element',
-            element: trigger,
-            tagName: trigger.tagName.toLowerCase(),
-            text: trigger.textContent?.trim() || '',
-            id: trigger.id || null,
-          };
-          this.open(modal, triggerInfo);
-        };
-        trigger.addEventListener('click', openListener);
-        this.eventListeners.push({ element: trigger, type: 'click', listener: openListener });
-      }
-    });
+    // Open triggers — use event delegation on document so triggers
+    // work even if they are rendered after the Modal is instantiated
+    // (common when using the library as an npm package with a bundler).
+    this._delegatedOpen = (event) => {
+      const trigger = event.target.closest(
+        `[${this.settings.openTrigger}="${modalId}"]`
+      );
+      if (!trigger) return;
+
+      event.preventDefault();
+      const triggerInfo = {
+        type: 'element',
+        element: trigger,
+        tagName: trigger.tagName.toLowerCase(),
+        text: trigger.textContent?.trim() || '',
+        id: trigger.id || null,
+      };
+      this.open(modal, triggerInfo);
+    };
+    document.addEventListener('click', this._delegatedOpen);
 
     // Close triggers inside modal
     modal.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((trigger) => {
@@ -278,6 +275,12 @@ class Modal {
   destroy() {
     if (this._destroyed) return;
     this.logDebug('Destroying all event listeners.');
+
+    // Remove delegated open listener
+    if (this._delegatedOpen) {
+      document.removeEventListener('click', this._delegatedOpen);
+      this._delegatedOpen = null;
+    }
 
     this.eventListeners.forEach(({ element, type, listener }) => {
       element.removeEventListener(type, listener);

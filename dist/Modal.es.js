@@ -56,14 +56,8 @@ class c {
         } catch {
         }
     }, this.DOM = {
-      modal: this.settings.selector,
-      openTriggers: document.querySelectorAll(
-        `[${this.settings.openTrigger}="${this.settings.selector.id}"]`
-      ),
-      closeTriggers: this.settings.selector.querySelectorAll(
-        `[${this.settings.closeTrigger}]`
-      )
-    }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._disabled = !1, this.eventListeners = [], this.init(), this.events();
+      modal: this.settings.selector
+    }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._disabled = !1, this.eventListeners = [], this._delegatedOpen = null, this.init(), this.events();
   }
   logDebug(e) {
     this.settings.debug && console.debug(`[Modal Debug]: ${e}`);
@@ -78,35 +72,34 @@ class c {
   }
   addEventListeners(e) {
     const n = e.id;
-    this.DOM.openTriggers.forEach((s) => {
-      if (s.getAttribute(this.settings.openTrigger) === n) {
-        const i = (o) => {
-          var l;
-          o.preventDefault();
-          const r = {
-            type: "element",
-            element: s,
-            tagName: s.tagName.toLowerCase(),
-            text: ((l = s.textContent) == null ? void 0 : l.trim()) || "",
-            id: s.id || null
-          };
-          this.open(e, r);
-        };
-        s.addEventListener("click", i), this.eventListeners.push({ element: s, type: "click", listener: i });
-      }
-    }), e.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((s) => {
+    this._delegatedOpen = (s) => {
+      var l;
+      const i = s.target.closest(
+        `[${this.settings.openTrigger}="${n}"]`
+      );
+      if (!i) return;
+      s.preventDefault();
+      const o = {
+        type: "element",
+        element: i,
+        tagName: i.tagName.toLowerCase(),
+        text: ((l = i.textContent) == null ? void 0 : l.trim()) || "",
+        id: i.id || null
+      };
+      this.open(e, o);
+    }, document.addEventListener("click", this._delegatedOpen), e.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((s) => {
       const i = (o) => {
-        var l;
+        var r;
         o.preventDefault(), this.logDebug(`Close trigger clicked for modal ID: ${n}`);
-        const r = {
+        const l = {
           type: "element",
           element: s,
           tagName: s.tagName.toLowerCase(),
-          text: ((l = s.textContent) == null ? void 0 : l.trim()) || "",
+          text: ((r = s.textContent) == null ? void 0 : r.trim()) || "",
           id: s.id || null,
           action: "close"
         };
-        this.close(e, r);
+        this.close(e, l);
       };
       s.addEventListener("click", i), this.eventListeners.push({ element: s, type: "click", listener: i });
     });
@@ -191,7 +184,7 @@ class c {
     this.isOpen(this.DOM.modal) ? this.close(this.DOM.modal) : this.open(this.DOM.modal);
   }
   destroy() {
-    this._destroyed || (this.logDebug("Destroying all event listeners."), this.eventListeners.forEach(({ element: e, type: n, listener: t }) => {
+    this._destroyed || (this.logDebug("Destroying all event listeners."), this._delegatedOpen && (document.removeEventListener("click", this._delegatedOpen), this._delegatedOpen = null), this.eventListeners.forEach(({ element: e, type: n, listener: t }) => {
       e.removeEventListener(n, t);
     }), this.eventListeners = [], this._removeEsc(), this._destroyed = !0, console.info("All modal event listeners have been removed."));
   }
