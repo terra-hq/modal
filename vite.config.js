@@ -18,10 +18,8 @@ export default defineConfig({
       },
       outDir, 
       emptyOutDir: true, 
-      rollupOptions: {
-      
+      rolldownOptions: {
         output: {
-         
           name: 'Modal',
         },
       },
