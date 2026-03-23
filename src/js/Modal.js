@@ -78,6 +78,8 @@ class Modal {
     this._busy = false;
     this._destroyed = false;
     this._attachEsc = null;
+    this._trapTabHandler = null;
+    this._previousActiveElement = null;
     this._disabled = false;
     this.eventListeners = [];
     this._delegatedOpen = null;
@@ -98,10 +100,10 @@ class Modal {
   }
 
   events() {
-    this.addEventListeners(this.DOM.modal);
+    this.addOrDefineEventListeners(this.DOM.modal);
   }
 
-  addEventListeners(modal) {
+  addOrDefineEventListeners(modal) {
     const modalId = modal.id;
 
     // Open triggers — use event delegation on document so triggers
@@ -171,6 +173,79 @@ class Modal {
       modal.addEventListener('click', onRootClick);
       this.eventListeners.push({ element: modal, type: 'click', listener: onRootClick });
     }
+
+    // Tab Trapping to contain tab navigation when modal is open
+    this._trapTabHandler = (e) => {
+      if (e.key !== 'Tab' || !this.isOpen(this.DOM.modal)) return;
+
+      const focusables = this._getFocusableElements(this.DOM.modal);
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (!this.DOM.modal.contains(active)) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
+
+      if (e.shiftKey) {
+        if (active === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+  }
+
+  _isTabbable(el) {
+    if (!(el instanceof HTMLElement)) return false;
+    if (el.disabled) return false;
+    if (el.getAttribute('tabindex') === '-1') return false;
+    if (!el.offsetWidth && !el.offsetHeight && el.getClientRects().length === 0) return false;
+    const style = getComputedStyle(el);
+    if (style.visibility === 'hidden' || style.display === 'none') return false;
+    return true;
+  }
+
+  _getFocusableElements(container) {
+    let focusableSelectors = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+    if (!(container instanceof Element)) return [];
+    return Array.from(container.querySelectorAll(focusableSelectors)).filter((el) =>
+      this._isTabbable(el)
+    );
+  }
+
+  _focusModalContent(modalEl) {
+    const focusables = this._getFocusableElements(modalEl);
+    if (focusables.length > 0) {
+      focusables[0].focus();
+      return;
+    }
+  }
+
+  _removeTabTrap() {
+    document.removeEventListener('keydown', this._trapTabHandler, true);
+  }
+
+  _addTabTrap() {
+    document.addEventListener('keydown', this._trapTabHandler, true);
+    this.eventListeners.push({ element: this.DOM.modal, type: 'keydown', listener: this._trapTabHandler });
   }
 
   _ensureEscAttached() {
@@ -213,13 +288,20 @@ class Modal {
     this._safe(this.settings.beforeOpen, modalEl, trigger);
     this.logDebug(`Opening modal ID: ${modalEl.id}`);
 
+    this._previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
     modalEl.classList.add(this.settings.openClass);
     modalEl.setAttribute('aria-hidden', 'false');
 
     if (this.settings.disableScroll) document.body.style.overflow = 'hidden';
 
     this._ensureEscAttached();
+    this._addTabTrap();
     this._safe(this.settings.onShow, modalEl, trigger);
+
+    requestAnimationFrame(() => {
+      if (this.isOpen(modalEl)) this._focusModalContent(modalEl);
+    });
 
     this._busy = false;
   }
@@ -255,6 +337,12 @@ class Modal {
     if (this.settings.disableScroll) document.body.style.overflow = '';
 
     this._removeEsc();
+    this._removeTabTrap();
+
+    let _previousActiveElement = this._previousActiveElement;
+    _previousActiveElement.focus({ preventScroll: true });
+    this._previousActiveElement = null;
+
     this._safe(this.settings.onClose, modalEl, trigger);
 
     this._busy = false;
