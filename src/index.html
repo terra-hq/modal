@@ -25,6 +25,7 @@
                         <button class="c--btn-a" data-modal-open="modal-1" aria-controls="modal-1" aria-haspopup="dialog">Open Basic Modal</button>
                         <button class="c--btn-a" data-modal-open="modal-2" aria-controls="modal-2" aria-haspopup="dialog">Open Embedded Modal</button>
                         <button class="c--btn-a js--fire" aria-controls="modal-programmatic" aria-haspopup="dialog">Fire Custom Event</button>
+                        <button class="c--btn-a" data-modal-open="modal-expandable" aria-controls="modal-expandable" aria-haspopup="dialog">Open Expandable Modal</button>
                     </div>
 
                     <div class="u--mb-3">
@@ -61,6 +62,18 @@
                                 .
                             </p>
                             <button data-modal-close class="f--mt-2">Got it</button>
+                        </div>
+                    </div>
+
+                    <!-- Expandable Modal -->
+                    <div class="c--modal-a" id="modal-expandable" aria-hidden="true">
+                        <div class="c--modal-a__overlay" data-modal-close></div>
+                        <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-expandable-title" aria-describedby="modal-expandable-desc">
+                            <h2 id="modal-expandable-title">Expandable Modal</h2>
+                            <button aria-label="Toggle expanded" data-modal-expand>⤢</button>
+                            <button aria-label="Close modal" data-modal-close>×</button>
+                            <p id="modal-expandable-desc">Click the ⤢ icon to expand this modal to the full viewport, then again to collapse. Reopening resets it to the default size.</p>
+                            <button data-modal-close class="f--mt-2">Close</button>
                         </div>
                     </div>
 

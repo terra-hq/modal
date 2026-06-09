@@ -9,7 +9,8 @@ It provides **simple configuration**, **robust callbacks**, and **debugging tool
 
 - 🧩 **Plug & Play:** Works with minimal setup and clean HTML attributes.
 - ⚙️ **Configurable:** Customize triggers, class names, and behaviors.
-- 🔁 **Lifecycle Hooks:** Use callbacks (`beforeOpen`, `onShow`, `beforeClose`, `onClose`) to extend functionality.
+- 🔁 **Lifecycle Hooks:** Use callbacks (`beforeOpen`, `onShow`, `beforeClose`, `onClose`, `onExpand`, `onCollapse`) to extend functionality.
+- ⛶ **Fullscreen (optional):** Opt-in expand button that grows the modal to the full viewport, with mobile-safe dynamic viewport (`dvh`) sizing.
 - 🔒 **Scroll Locking:** Prevent background scroll when modals are open.
 - 🪶 **Lightweight:** No dependencies, framework-agnostic.
 - 🐞 **Debug Mode:** Console feedback for easy testing and troubleshooting.
@@ -72,6 +73,11 @@ const modal = new Modal({
 | `closeTrigger`  | `string`           | `data-modal-close`    | Attribute used on buttons/links that **close** the modal.                       |
 | `openClass`     | `string`           | `c--modal-a--is-open` | Class added to the modal element when it is open.                               |
 | `disableScroll` | `boolean`          | `true`                | Prevents `<body>` scrolling while the modal is open.                            |
+| `expandable`    | `boolean`          | `false`               | Enables the fullscreen toggle. When `true`, `[data-modal-expand]` buttons inside the modal toggle the expanded state. |
+| `expandTrigger` | `string`           | `data-modal-expand`   | Attribute used on buttons that **toggle fullscreen**.                           |
+| `expandedClass` | `string`           | `c--modal-a--is-expanded` | Class added to the modal element while it is expanded to fullscreen.        |
+| `onExpand`      | `Function \| null` | `null`                | Callback executed when the modal **enters** fullscreen. `(modal, triggerInfo) => void` |
+| `onCollapse`    | `Function \| null` | `null`                | Callback executed when the modal **leaves** fullscreen. `(modal, triggerInfo) => void` |
 | `debug`         | `boolean`          | `false`               | Enables helpful console logs for debugging and testing.                         |
 
 
@@ -119,6 +125,42 @@ new Modal({
 });
 ```
 Callbacks are wrapped safely. If a callback throws, it logs an error but won’t break the modal.
+
+## ⛶ Fullscreen (expandable)
+
+Set `expandable: true` and add a button with `data-modal-expand` inside the modal. Clicking it toggles the modal between its default size and the full viewport.
+
+```html
+<div id="my-modal" class="c--modal-a" aria-hidden="true">
+  <div class="c--modal-a__overlay" data-modal-close></div>
+  <div class="c--modal-a__item" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h2 id="modal-title">Expandable Modal</h2>
+    <button aria-label="Toggle fullscreen" data-modal-expand>⤢</button>
+    <button aria-label="Close modal" data-modal-close>×</button>
+    <p>Click ⤢ to expand to the full viewport, then again to collapse.</p>
+  </div>
+</div>
+```
+
+```js
+new Modal({
+  selector: document.getElementById('my-modal'),
+  expandable: true,
+  onExpand: (modal, trigger) => console.log('expanded', trigger),
+  onCollapse: (modal, trigger) => console.log('collapsed', trigger),
+});
+```
+
+```scss
+.c--modal-a--is-expanded .c--modal-a__item {
+  max-width: 100%;
+  width: 100%;
+  max-height: 100vh;   // fallback
+  max-height: 100dvh;  // dynamic viewport
+  height: 100dvh;
+  border-radius: 0;
+}
+```
 
 ## 🧯 Destroy (SPA / transitions)
 

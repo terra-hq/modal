@@ -16,6 +16,11 @@ class Modal {
    * @param {string} [options.openClass='c--modal-a--is-open']
    * @param {string} [options.overlaySelector='[data-modal-overlay]']
    * @param {boolean} [options.disableScroll=true]
+   * @param {boolean} [options.expandable=false]
+   * @param {string} [options.expandTrigger='data-modal-expand']
+   * @param {string} [options.expandedClass='c--modal-a--is-expanded']
+   * @param {Function} [options.onExpand]
+   * @param {Function} [options.onCollapse]
    * @param {boolean} [options.debug=false]
    */
   constructor(options = {}) {
@@ -41,6 +46,11 @@ class Modal {
       openClass: 'c--modal-a--is-open',
       overlaySelector: '[data-modal-overlay]',
       disableScroll: true,
+      expandable: false,
+      expandTrigger: 'data-modal-expand',
+      expandedClass: 'c--modal-a--is-expanded',
+      onExpand: () => {},
+      onCollapse: () => {},
       debug: false,
     };
 
@@ -147,6 +157,21 @@ class Modal {
       trigger.addEventListener('click', closeListener);
       this.eventListeners.push({ element: trigger, type: 'click', listener: closeListener });
     });
+
+    // Expand modal triggers
+    if (this.settings.expandable) {
+      modal.querySelectorAll(`[${this.settings.expandTrigger}]`).forEach((trigger) => {
+        const listener = (event) => {
+          event.preventDefault();
+          const expanded = modal.classList.toggle(this.settings.expandedClass);
+          trigger.setAttribute('aria-pressed', String(expanded));
+          const info = { type: 'element', element: trigger, action: expanded ? 'expand' : 'collapse' };
+          this._safe(expanded ? this.settings.onExpand : this.settings.onCollapse, modal, info);
+        };
+        trigger.addEventListener('click', listener);
+        this.eventListeners.push({ element: trigger, type: 'click', listener });
+      });
+    }
 
     // Overlay click (flexible)
     const overlay = modal.querySelector(this.settings.overlaySelector);
@@ -333,6 +358,14 @@ class Modal {
 
     modalEl.classList.remove(this.settings.openClass);
     modalEl.setAttribute('aria-hidden', 'true');
+
+    if (modalEl.classList.contains(this.settings.expandedClass)) {
+      modalEl.addEventListener(
+        'transitionend',
+        () => modalEl.classList.remove(this.settings.expandedClass),
+        { once: true }
+      );
+    }
 
     if (this.settings.disableScroll) document.body.style.overflow = '';
 

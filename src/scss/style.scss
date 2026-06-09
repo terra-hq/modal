@@ -13,6 +13,17 @@
         pointer-events: auto;
     }
 
+    &--is-expanded & {
+        &__item {
+            max-width: 100%;
+            width: 100%;
+            max-height: 100vh;
+            max-height: 100dvh;
+            height: 100dvh;
+            border-radius: 0;
+        }
+    }
+
     &__overlay {
         position: absolute;
         inset: 0;
@@ -40,6 +51,21 @@
         position: absolute;
         top: 10px;
         right: 10px;
+        background: none;
+        border: none;
+        font-size: 0.5rem;
+        cursor: pointer;
+        color: #666;
+
+        &:hover {
+            color: #000;
+        }
+    }
+
+    &__item button[data-modal-expand] {
+        position: absolute;
+        top: 10px;
+        right: 40px;
         background: none;
         border: none;
         font-size: 0.5rem;
