@@ -207,7 +207,9 @@ m.destroy(); // removes all listeners, ESC binding, etc.
 
 
 ### ChangeLog
-**0.0.09** – Enhanced Error Handling & Stability
+**0.0.13** - Added an optional button to expand the modal to fullscreen.
+
+**0.0.09** - Enhanced Error Handling & Stability
 
 - Added safe error handling when opening or closing modals. The instance no longer throws runtime errors if the selector is invalid or `null`; instead, a clear console message is displayed  (e.g., “No modal Element found...”).
 - Added internal `_report()` helper to produce readable error messages and optionally trigger `onError`.
