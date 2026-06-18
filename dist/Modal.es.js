@@ -11,6 +11,11 @@ class c {
    * @param {string} [options.openClass='c--modal-a--is-open']
    * @param {string} [options.overlaySelector='[data-modal-overlay]']
    * @param {boolean} [options.disableScroll=true]
+   * @param {boolean} [options.expandable=false]
+   * @param {string} [options.expandTrigger='data-modal-expand']
+   * @param {string} [options.expandedClass='c--modal-a--is-expanded']
+   * @param {Function} [options.onExpand]
+   * @param {Function} [options.onCollapse]
    * @param {boolean} [options.debug=false]
    */
   constructor(e = {}) {
@@ -35,6 +40,13 @@ class c {
       openClass: "c--modal-a--is-open",
       overlaySelector: "[data-modal-overlay]",
       disableScroll: !0,
+      expandable: !1,
+      expandTrigger: "data-modal-expand",
+      expandedClass: "c--modal-a--is-expanded",
+      onExpand: () => {
+      },
+      onCollapse: () => {
+      },
       debug: !1
     };
     this.settings = { ...n, ...e }, this._safe = (t, ...s) => {
@@ -57,7 +69,7 @@ class c {
         }
     }, this.DOM = {
       modal: this.settings.selector
-    }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._disabled = !1, this.eventListeners = [], this._delegatedOpen = null, this.init(), this.events();
+    }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._trapTabHandler = null, this._previousActiveElement = null, this._disabled = !1, this.eventListeners = [], this._delegatedOpen = null, this.init(), this.events();
   }
   logDebug(e) {
     this.settings.debug && console.debug(`[Modal Debug]: ${e}`);
@@ -68,9 +80,9 @@ class c {
     this.logDebug(`Found modal with selector "${this.settings.selector}".`);
   }
   events() {
-    this.addEventListeners(this.DOM.modal);
+    this.addOrDefineEventListeners(this.DOM.modal);
   }
-  addEventListeners(e) {
+  addOrDefineEventListeners(e) {
     const n = e.id;
     this._delegatedOpen = (s) => {
       var l;
@@ -89,17 +101,26 @@ class c {
       this.open(e, o);
     }, document.addEventListener("click", this._delegatedOpen), e.querySelectorAll(`[${this.settings.closeTrigger}]`).forEach((s) => {
       const i = (o) => {
-        var r;
+        var a;
         o.preventDefault(), this.logDebug(`Close trigger clicked for modal ID: ${n}`);
         const l = {
           type: "element",
           element: s,
           tagName: s.tagName.toLowerCase(),
-          text: ((r = s.textContent) == null ? void 0 : r.trim()) || "",
+          text: ((a = s.textContent) == null ? void 0 : a.trim()) || "",
           id: s.id || null,
           action: "close"
         };
         this.close(e, l);
+      };
+      s.addEventListener("click", i), this.eventListeners.push({ element: s, type: "click", listener: i });
+    }), this.settings.expandable && e.querySelectorAll(`[${this.settings.expandTrigger}]`).forEach((s) => {
+      const i = (o) => {
+        o.preventDefault();
+        const l = e.classList.toggle(this.settings.expandedClass);
+        s.setAttribute("aria-pressed", String(l));
+        const a = { type: "element", element: s, action: l ? "expand" : "collapse" };
+        this._safe(l ? this.settings.onExpand : this.settings.onCollapse, e, a);
       };
       s.addEventListener("click", i), this.eventListeners.push({ element: s, type: "click", listener: i });
     });
@@ -123,6 +144,51 @@ class c {
       };
       e.addEventListener("click", s), this.eventListeners.push({ element: e, type: "click", listener: s });
     }
+    this._trapTabHandler = (s) => {
+      if (s.key !== "Tab" || !this.isOpen(this.DOM.modal)) return;
+      const i = this._getFocusableElements(this.DOM.modal);
+      if (i.length === 0) {
+        s.preventDefault();
+        return;
+      }
+      const o = i[0], l = i[i.length - 1], a = document.activeElement;
+      if (!this.DOM.modal.contains(a)) {
+        s.preventDefault(), o.focus();
+        return;
+      }
+      s.shiftKey ? a === o && (s.preventDefault(), l.focus()) : a === l && (s.preventDefault(), o.focus());
+    };
+  }
+  _isTabbable(e) {
+    if (!(e instanceof HTMLElement) || e.disabled || e.getAttribute("tabindex") === "-1" || !e.offsetWidth && !e.offsetHeight && e.getClientRects().length === 0) return !1;
+    const n = getComputedStyle(e);
+    return !(n.visibility === "hidden" || n.display === "none");
+  }
+  _getFocusableElements(e) {
+    let n = [
+      "a[href]",
+      "button:not([disabled])",
+      "textarea:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(",");
+    return e instanceof Element ? Array.from(e.querySelectorAll(n)).filter(
+      (t) => this._isTabbable(t)
+    ) : [];
+  }
+  _focusModalContent(e) {
+    const n = this._getFocusableElements(e);
+    if (n.length > 0) {
+      n[0].focus();
+      return;
+    }
+  }
+  _removeTabTrap() {
+    document.removeEventListener("keydown", this._trapTabHandler, !0);
+  }
+  _addTabTrap() {
+    document.addEventListener("keydown", this._trapTabHandler, !0), this.eventListeners.push({ element: this.DOM.modal, type: "keydown", listener: this._trapTabHandler });
   }
   _ensureEscAttached() {
     this._attachEsc || (this._attachEsc = (e) => {
@@ -150,15 +216,17 @@ class c {
     if (this._busy || this.isOpen(t)) return;
     this._busy = !0;
     const s = n || { type: "programmatic", source: "manual", method: "open()" };
-    this._safe(this.settings.beforeOpen, t, s), this.logDebug(`Opening modal ID: ${t.id}`), t.classList.add(this.settings.openClass), t.setAttribute("aria-hidden", "false"), this.settings.disableScroll && (document.body.style.overflow = "hidden"), this._ensureEscAttached(), this._safe(this.settings.onShow, t, s), this._busy = !1;
+    this._safe(this.settings.beforeOpen, t, s), this.logDebug(`Opening modal ID: ${t.id}`), this._previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null, t.classList.add(this.settings.openClass), t.setAttribute("aria-hidden", "false"), this.settings.disableScroll && (document.body.style.overflow = "hidden"), this._ensureEscAttached(), this._addTabTrap(), this._safe(this.settings.onShow, t, s), requestAnimationFrame(() => {
+      this.isOpen(t) && this._focusModalContent(t);
+    }), this._busy = !1;
   }
   close(e, n = null) {
-    var i;
+    var o;
     if (this._disabled) {
       this._report("close", "Instance is disabled (invalid selector on init).");
       return;
     }
-    const t = e instanceof Element ? e : (i = this.DOM) == null ? void 0 : i.modal;
+    const t = e instanceof Element ? e : (o = this.DOM) == null ? void 0 : o.modal;
     if (!(t instanceof Element)) {
       this._report(
         "close",
@@ -170,7 +238,11 @@ class c {
     if (this._busy || !this.isOpen(t)) return;
     this._busy = !0;
     const s = n || { type: "programmatic", source: "manual", method: "close()", action: "close" };
-    this._safe(this.settings.beforeClose, t, s), this.logDebug(`Closing modal ID: ${t.id}`), t.classList.remove(this.settings.openClass), t.setAttribute("aria-hidden", "true"), this.settings.disableScroll && (document.body.style.overflow = ""), this._removeEsc(), this._safe(this.settings.onClose, t, s), this._busy = !1;
+    this._safe(this.settings.beforeClose, t, s), this.logDebug(`Closing modal ID: ${t.id}`), t.classList.remove(this.settings.openClass), t.setAttribute("aria-hidden", "true"), t.classList.contains(this.settings.expandedClass) && t.addEventListener(
+      "transitionend",
+      () => t.classList.remove(this.settings.expandedClass),
+      { once: !0 }
+    ), this.settings.disableScroll && (document.body.style.overflow = ""), this._removeEsc(), this._removeTabTrap(), this._previousActiveElement.focus({ preventScroll: !0 }), this._previousActiveElement = null, this._safe(this.settings.onClose, t, s), this._busy = !1;
   }
   isOpen(e) {
     return e.classList.contains(this.settings.openClass);
