@@ -81,6 +81,7 @@ class Modal {
     this._destroyed = false;
     this._attachEsc = null;
     this._trapTabHandler = null;
+    this._tabTrapAttached = false;
     this._previousActiveElement = null;
     this._disabled = false;
     this.eventListeners = [];
@@ -258,12 +259,15 @@ class Modal {
   }
 
   _removeTabTrap() {
+    if (!this._tabTrapAttached) return;
     document.removeEventListener('keydown', this._trapTabHandler, true);
+    this._tabTrapAttached = false;
   }
 
   _addTabTrap() {
+    if (this._tabTrapAttached) return;
     document.addEventListener('keydown', this._trapTabHandler, true);
-    this.eventListeners.push({ element: this.DOM.modal, type: 'keydown', listener: this._trapTabHandler });
+    this._tabTrapAttached = true;
   }
 
   _ensureEscAttached() {
@@ -394,6 +398,7 @@ class Modal {
     this.eventListeners = [];
 
     this._removeEsc();
+    this._removeTabTrap();
 
     this._destroyed = true;
     console.info('All modal event listeners have been removed.');

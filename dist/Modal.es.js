@@ -38,7 +38,7 @@ var e = class {
 					...n
 				});
 			} catch {}
-		}, this.DOM = { modal: this.settings.selector }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._trapTabHandler = null, this._previousActiveElement = null, this._disabled = !1, this.eventListeners = [], this._delegatedOpen = null, this.init(), this.events(), this._installPlugins();
+		}, this.DOM = { modal: this.settings.selector }, this._busy = !1, this._destroyed = !1, this._attachEsc = null, this._trapTabHandler = null, this._tabTrapAttached = !1, this._previousActiveElement = null, this._disabled = !1, this.eventListeners = [], this._delegatedOpen = null, this.init(), this.events(), this._installPlugins();
 	}
 	_installPlugins() {
 		(this.settings.plugins || []).forEach((e) => {
@@ -171,14 +171,10 @@ var e = class {
 		}
 	}
 	_removeTabTrap() {
-		document.removeEventListener("keydown", this._trapTabHandler, !0);
+		this._tabTrapAttached &&= (document.removeEventListener("keydown", this._trapTabHandler, !0), !1);
 	}
 	_addTabTrap() {
-		document.addEventListener("keydown", this._trapTabHandler, !0), this.eventListeners.push({
-			element: this.DOM.modal,
-			type: "keydown",
-			listener: this._trapTabHandler
-		});
+		this._tabTrapAttached ||= (document.addEventListener("keydown", this._trapTabHandler, !0), !0);
 	}
 	_ensureEscAttached() {
 		this._attachEsc || (this._attachEsc = (e) => {
@@ -246,7 +242,7 @@ var e = class {
 	destroy() {
 		this._destroyed || (this.logDebug("Destroying all event listeners."), this._delegatedOpen &&= (document.removeEventListener("click", this._delegatedOpen), null), this.eventListeners.forEach(({ element: e, type: t, listener: n }) => {
 			e.removeEventListener(t, n);
-		}), this.eventListeners = [], this._removeEsc(), this._destroyed = !0, console.info("All modal event listeners have been removed."));
+		}), this.eventListeners = [], this._removeEsc(), this._removeTabTrap(), this._destroyed = !0, console.info("All modal event listeners have been removed."));
 	}
 };
 //#endregion
