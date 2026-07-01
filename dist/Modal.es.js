@@ -5,7 +5,7 @@ var e = class {
 			console.warn("[Modal] selector must be a DOM Element. Modal not initialized."), this._disabled = !0;
 			return;
 		}
-		this.settings = {
+		let t = {
 			onShow: (t) => {
 				e.debug && console.info(`${t.id || "[no-id]"} is shown`);
 			},
@@ -21,7 +21,10 @@ var e = class {
 			overlaySelector: "[data-modal-overlay]",
 			disableScroll: !0,
 			plugins: [],
-			debug: !1,
+			debug: !1
+		};
+		this.settings = {
+			...t,
 			...e
 		}, this._safe = (e, ...t) => {
 			if (typeof e == "function") try {
