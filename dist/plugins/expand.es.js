@@ -1,0 +1,38 @@
+//#region src/js/plugins/expand.js
+function e(e = {}) {
+	let t = e.expandTrigger || "data-modal-expand", n = e.expandedClass || "c--modal-a--is-expanded";
+	return {
+		name: "expand",
+		install(r) {
+			let i = r.DOM.modal, a = r.settings.openClass;
+			i.querySelectorAll(`[${t}]`).forEach((t) => {
+				let a = (a) => {
+					a.preventDefault();
+					let o = i.classList.toggle(n);
+					t.setAttribute("aria-pressed", String(o));
+					let s = {
+						type: "element",
+						element: t,
+						action: o ? "expand" : "collapse"
+					};
+					r._safe(o ? e.onExpand : e.onCollapse, i, s);
+				};
+				t.addEventListener("click", a), r.eventListeners.push({
+					element: t,
+					type: "click",
+					listener: a
+				});
+			});
+			let o = () => {
+				!i.classList.contains(a) && i.classList.contains(n) && i.classList.remove(n);
+			};
+			i.addEventListener("transitionend", o), r.eventListeners.push({
+				element: i,
+				type: "transitionend",
+				listener: o
+			});
+		}
+	};
+}
+//#endregion
+export { e as default };

@@ -3,24 +3,40 @@ import { resolve } from 'path';
 
 const root = resolve(__dirname, 'src');
 const outDir = resolve(__dirname, 'dist');
-const entryPath = resolve(__dirname, 'src/js/Modal.js');
+
+const targets = {
+  core: {
+    entry: resolve(__dirname, 'src/js/Modal.js'),
+    name: 'Modal',
+    fileName: (format) => `Modal.${format}.js`,
+    emptyOutDir: true,
+  },
+  expand: {
+    entry: resolve(__dirname, 'src/js/plugins/expand.js'),
+    name: 'ModalExpand',
+    fileName: (format) => `plugins/expand.${format}.js`,
+    emptyOutDir: false,
+  },
+};
+
+const target = targets[process.env.BUILD_TARGET || 'core'];
 
 export default defineConfig({
     root,
     publicDir: 'public',
-    plugins: [], 
+    plugins: [],
     build: {
       lib: {
-        entry: entryPath,
-        name: 'Modal', // Library name as : Counter | etc
-        formats: ['es', 'umd'], // Output formats as : es | umd, es is for modern browsers, umd is for older browsers
-        fileName: (format,name) => `${name}.${format}.js`, // File naming as : reveal-it | collapsify | etc
+        entry: target.entry,
+        name: target.name,
+        formats: ['es', 'umd'],
+        fileName: target.fileName,
       },
-      outDir, 
-      emptyOutDir: true, 
+      outDir,
+      emptyOutDir: target.emptyOutDir,
       rolldownOptions: {
         output: {
-          name: 'Modal',
+          name: target.name,
         },
       },
     },

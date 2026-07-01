@@ -9,8 +9,8 @@ It provides **simple configuration**, **robust callbacks**, and **debugging tool
 
 - 🧩 **Plug & Play:** Works with minimal setup and clean HTML attributes.
 - ⚙️ **Configurable:** Customize triggers, class names, and behaviors.
-- 🔁 **Lifecycle Hooks:** Use callbacks (`beforeOpen`, `onShow`, `beforeClose`, `onClose`, `onExpand`, `onCollapse`) to extend functionality.
-- ⛶ **Fullscreen (optional):** Opt-in expand button that grows the modal to the full viewport, with mobile-safe dynamic viewport (`dvh`) sizing.
+- 🔁 **Lifecycle Hooks:** Use callbacks (`beforeOpen`, `onShow`, `beforeClose`, `onClose`) to extend functionality.
+- 🧩 **Plugins:** Extend a modal via the `plugins` option — e.g. the optional **Expand** plugin adds a fullscreen toggle, with mobile-safe dynamic viewport (`dvh`) sizing.
 - 🔒 **Scroll Locking:** Prevent background scroll when modals are open.
 - 🪶 **Lightweight:** No dependencies, framework-agnostic.
 - 🐞 **Debug Mode:** Console feedback for easy testing and troubleshooting.
@@ -27,8 +27,12 @@ npm install @terrahq/modal
 
 ### Or via CDN
 
-```js
-<script src="https://unpkg.com/@terrahq/modal/dist/modal.umd.js"></script>
+```html
+<!-- Core -->
+<script src="https://unpkg.com/@terrahq/modal/dist/Modal.umd.js"></script>
+
+<!-- Optional Expand plugin -->
+<script src="https://unpkg.com/@terrahq/modal/dist/plugins/expand.umd.js"></script>
 ```
 
 ## 🚀 Quick Start
@@ -73,11 +77,7 @@ const modal = new Modal({
 | `closeTrigger`  | `string`           | `data-modal-close`    | Attribute used on buttons/links that **close** the modal.                       |
 | `openClass`     | `string`           | `c--modal-a--is-open` | Class added to the modal element when it is open.                               |
 | `disableScroll` | `boolean`          | `true`                | Prevents `<body>` scrolling while the modal is open.                            |
-| `expandable`    | `boolean`          | `false`               | Enables the fullscreen toggle. When `true`, `[data-modal-expand]` buttons inside the modal toggle the expanded state. |
-| `expandTrigger` | `string`           | `data-modal-expand`   | Attribute used on buttons that **toggle fullscreen**.                           |
-| `expandedClass` | `string`           | `c--modal-a--is-expanded` | Class added to the modal element while it is expanded to fullscreen.        |
-| `onExpand`      | `Function \| null` | `null`                | Callback executed when the modal **enters** fullscreen. `(modal, triggerInfo) => void` |
-| `onCollapse`    | `Function \| null` | `null`                | Callback executed when the modal **leaves** fullscreen. `(modal, triggerInfo) => void` |
+| `plugins`       | `Array`            | `[]`                  | Plugins to extend this instance, e.g. `[ Expand() ]`. See **Plugins** below. |
 | `debug`         | `boolean`          | `false`               | Enables helpful console logs for debugging and testing.                         |
 
 
@@ -126,9 +126,35 @@ new Modal({
 ```
 Callbacks are wrapped safely. If a callback throws, it logs an error but won’t break the modal.
 
-## ⛶ Fullscreen (expandable)
+## 🧩 Plugins
 
-Set `expandable: true` and add a button with `data-modal-expand` inside the modal. Clicking it toggles the modal between its default size and the full viewport.
+The core stays lean; opt-in features ship as plugins you attach via the `plugins` option. A
+plugin is a small factory that returns an object with a single `install(modal)` method, called
+once during init:
+
+```js
+{
+  name: 'my-plugin',
+  install(modal) {
+    // wire up DOM/listeners here
+  },
+}
+```
+
+Inside `install`, a plugin uses what the instance already exposes:
+
+| Member                       | Purpose                                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `modal.DOM.modal`            | The modal root element.                                                                  |
+| `modal.settings`             | The resolved instance settings (e.g. `settings.openClass`).                              |
+| `modal._safe(fn, ...args)`   | Invoke a user callback inside the modal's error-safe wrapper.                            |
+| `modal.eventListeners`       | Push `{ element, type, listener }` here and the modal's `destroy()` removes it for you.  |
+
+### ⛶ Expand (fullscreen)
+
+The Expand plugin adds an opt-in expand button that toggles the modal between its default size
+and the full viewport (mobile-safe `dvh` sizing). Add a button with `data-modal-expand` inside
+the modal and attach the plugin:
 
 ```html
 <div id="my-modal" class="c--modal-a" aria-hidden="true">
@@ -143,13 +169,24 @@ Set `expandable: true` and add a button with `data-modal-expand` inside the moda
 ```
 
 ```js
+import Modal from '@terrahq/modal';
+import Expand from '@terrahq/modal/plugins/expand';
+
 new Modal({
   selector: document.getElementById('my-modal'),
-  expandable: true,
-  onExpand: (modal, trigger) => console.log('expanded', trigger),
-  onCollapse: (modal, trigger) => console.log('collapsed', trigger),
+  plugins: [
+    Expand({
+      onExpand: (modal, trigger) => console.log('expanded', trigger),
+      onCollapse: (modal, trigger) => console.log('collapsed', trigger),
+    }),
+  ],
 });
 ```
+
+**Expand plugin options:** `expandTrigger` (default `data-modal-expand`), `expandedClass`
+(default `c--modal-a--is-expanded`), `onExpand`, `onCollapse`.
+
+Provide the fullscreen styles yourself (the package ships JS only):
 
 ```scss
 .c--modal-a--is-expanded .c--modal-a__item {

@@ -1,5 +1,6 @@
 import "./../scss/style.scss";
 import Modal from "./Modal";
+import Expand from "./plugins/expand";
 
 
 
@@ -27,12 +28,15 @@ const busyModal = new Modal({
 
 const expandableModal = new Modal({
   selector: document.getElementById('modal-expandable'),
-  expandable: true,
   debug: true,
+  plugins: [
+    Expand({
+      onExpand: (modal, trigger) => console.log(`Modal ${modal.id} expanded to expanded`, trigger),
+      onCollapse: (modal, trigger) => console.log(`Modal ${modal.id} collapsed from expanded`, trigger),
+    }),
+  ],
   onShow: (modal, trigger) => console.log(`Modal ${modal.id} is now visible`, trigger),
   onClose: (modal, trigger) => console.log(`Modal ${modal.id} is now hidden`, trigger),
-  onExpand: (modal, trigger) => console.log(`Modal ${modal.id} expanded to expanded`, trigger),
-  onCollapse: (modal, trigger) => console.log(`Modal ${modal.id} collapsed from expanded`, trigger),
 });
 
 const btn = document.querySelector('.js--advanced');
